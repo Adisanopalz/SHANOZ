@@ -212,7 +212,8 @@
                             <i class="ph-fill ph-warning-circle text-4xl"></i>
                         </div>
                         <h3 class="text-xl font-bold mb-2">Gagal Mengunggah</h3>
-                        <p id="error-message" class="text-sm text-gray-500 mb-6">Terjadi kesalahan koneksi.</p>
+                        <p id="error-message" class="text-sm text-gray-500 mb-2">Terjadi kesalahan koneksi.</p>
+                        <p class="text-xs text-gray-400 mb-6 max-w-xs mx-auto">Tips: Matikan AdBlock/VPN jika aktif. Beberapa jaringan kantor memblokir layanan file sharing.</p>
                         <button onclick="resetUpload()" class="bg-shanoz-accent hover:bg-rose-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">Coba Lagi</button>
                     </div>
 
@@ -300,12 +301,14 @@
             // Form Data
             const formData = new FormData();
             formData.append('file', file);
-            
-            // Set expiry: 1 day or 1 download (default file.io behavior is auto delete on download)
-            // Kita tidak perlu set parameter khusus karena default file.io sudah 1x download.
+            // Tambah parameter eksplisit untuk memastikan server menerima
+            formData.append('expires', '1d'); 
+            formData.append('maxDownloads', '1');
+            formData.append('autoDelete', 'true');
 
             activeXHR = new XMLHttpRequest();
-            activeXHR.open('POST', 'https://file.io', true);
+            // Tambah random query param untuk cache busting
+            activeXHR.open('POST', 'https://file.io/?_cb=' + new Date().getTime(), true);
 
             // Progress Handler
             activeXHR.upload.onprogress = (e) => {
@@ -324,18 +327,24 @@
                         if (response.success) {
                             showSuccess(response.link);
                         } else {
-                            showError("Respon server error.");
+                            // File.io kadang return 200 tapi success:false jika rate limit
+                            console.error('API Fail:', response);
+                            showError("Server sibuk. Coba sesaat lagi.");
                         }
                     } catch (e) {
-                        showError("Gagal memproses respon.");
+                        showError("Format respon server tidak dikenali.");
                     }
                 } else {
-                    showError("Gagal mengunggah. Coba lagi.");
+                    console.error('Status Error:', activeXHR.status);
+                    showError(`Gagal: Server merespon ${activeXHR.status}`);
                 }
             };
 
-            // Error Handler
-            activeXHR.onerror = () => showError("Koneksi terputus.");
+            // Error Handler (Network Level)
+            activeXHR.onerror = () => {
+                console.error("XHR Error Triggered");
+                showError("Koneksi diblokir (CORS/AdBlock). Coba refresh atau ganti jaringan.");
+            };
 
             activeXHR.send(formData);
         }
