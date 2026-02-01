@@ -1,40 +1,419 @@
 <!DOCTYPE html>
-<html lang="id" class="dark">
+<html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHANOZ | Real File Sharing</title>
+    <title>SHANOZ - Berbagi File Instan</title>
+    <meta name="description" content="Upload file instan, aman, dan sementara tanpa login.">
     
-    <!-- Google Fonts -->
+    <!-- Google Fonts: Space Grotesk -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Phosphor Icons -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Tailwind Configuration -->
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Manrope', 'sans-serif'],
-                    },
-                    colors: {
-                        shanoz: {
-                            light: '#fff0f2',
-                            surfaceLight: '#ffe4e8',
-                            dark: '#1a0508',
-                            surfaceDark: '#2b0a10',
-                            accent: '#e11d48',
-                            glow: '#ff4d6d',
-                        }
+                        sans: ['Space Grotesk', 'sans-serif'],
                     },
                     animation: {
-                        'zoom-in': 'zoomIn 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+                        'blob': 'blob 7s infinite',
+                        'intro-zoom': 'introZoom 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        },
+                        introZoom: {
+                            '0%': { opacity: '0', transform: 'scale(0.9) translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'scale(1) translateY(0)' },
+                        }
+                    },
+                    colors: {
+                        glass: {
+                            light: 'rgba(255, 255, 255, 0.7)',
+                            dark: 'rgba(17, 24, 39, 0.7)',
+                            border: 'rgba(255, 255, 255, 0.2)',
+                            borderDark: 'rgba(255, 255, 255, 0.05)',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+
+        /* Input Range Styling (Optional if needed later) */
+        input[type="file"] {
+            display: none;
+        }
+    </style>
+</head>
+<body class="antialiased bg-gray-50 text-gray-900 dark:bg-slate-900 dark:text-gray-100 transition-colors duration-500 overflow-hidden relative h-screen flex items-center justify-center selection:bg-indigo-500 selection:text-white">
+
+    <!-- Background Elements (Animated Blobs) -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute top-0 left-1/4 w-96 h-96 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob dark:bg-purple-800 dark:mix-blend-normal"></div>
+        <div class="absolute top-0 right-1/4 w-96 h-96 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000 dark:bg-indigo-800 dark:mix-blend-normal"></div>
+        <div class="absolute -bottom-32 left-1/3 w-96 h-96 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000 dark:bg-pink-800 dark:mix-blend-normal"></div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="relative z-10 w-full max-w-md p-6 mx-auto animate-intro-zoom">
+        
+        <!-- Glass Card -->
+        <div class="glass-panel w-full bg-white/60 dark:bg-slate-800/60 border border-white/40 dark:border-white/10 rounded-3xl p-8 relative overflow-hidden transition-all duration-300">
+            
+            <!-- Header -->
+            <header class="flex justify-between items-center mb-8">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                        <i data-lucide="zap" class="text-white w-5 h-5"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">SHANOZ</h1>
+                </div>
+                
+                <!-- Theme Toggle -->
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-200/50 dark:hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <i data-lucide="sun" class="w-5 h-5 hidden dark:block text-yellow-300"></i>
+                    <i data-lucide="moon" class="w-5 h-5 block dark:hidden text-slate-600"></i>
+                </button>
+            </header>
+
+            <!-- Upload State: IDLE -->
+            <div id="upload-zone" class="relative group cursor-pointer">
+                <input type="file" id="file-input">
+                
+                <div class="w-full h-64 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-600 group-hover:border-indigo-500 dark:group-hover:border-indigo-400 transition-all duration-300 flex flex-col items-center justify-center bg-white/20 dark:bg-black/10 hover:bg-white/40 dark:hover:bg-black/20 text-center p-6">
+                    
+                    <div class="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="cloud-upload" class="w-8 h-8 text-indigo-600 dark:text-indigo-400"></i>
+                    </div>
+                    
+                    <h3 class="text-lg font-semibold mb-1 text-gray-800 dark:text-gray-100">Klik atau drop file</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Maks 500MB. Bertahan 60 menit.</p>
+                </div>
+            </div>
+
+            <!-- Upload State: UPLOADING -->
+            <div id="progress-container" class="hidden mt-6">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400" id="file-name-display">file.zip</span>
+                    <span class="text-sm font-bold text-gray-700 dark:text-gray-200" id="progress-percent">0%</span>
+                </div>
+                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
+                    <div id="progress-bar" class="bg-gradient-to-r from-indigo-500 to-purple-600 h-2.5 rounded-full transition-all duration-100 ease-out" style="width: 0%"></div>
+                </div>
+                <p class="text-xs text-center text-gray-400 mt-2 animate-pulse">Sedang mengenkripsi & mengunggah ke awan...</p>
+            </div>
+
+            <!-- Upload State: SUCCESS -->
+            <div id="result-container" class="hidden mt-4">
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i data-lucide="check" class="w-8 h-8 text-green-600 dark:text-green-400"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 dark:text-white">Berhasil Diunggah!</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">File akan dihapus otomatis dalam 1 jam.</p>
+                </div>
+
+                <div class="bg-gray-50 dark:bg-black/20 rounded-xl p-4 border border-gray-200 dark:border-white/5 flex items-center gap-3">
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Tautan Unduhan</p>
+                        <input type="text" id="download-link" readonly class="w-full bg-transparent border-none p-0 text-sm font-medium text-gray-800 dark:text-gray-200 focus:ring-0 truncate" value="...">
+                    </div>
+                    <button id="copy-btn" class="p-2 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-200 dark:hover:bg-indigo-900/50 transition-colors">
+                        <i data-lucide="copy" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <button id="reset-btn" class="w-full mt-6 py-3 rounded-xl border border-gray-200 dark:border-white/10 text-sm font-semibold hover:bg-gray-50 dark:hover:bg-white/5 transition-colors flex items-center justify-center gap-2">
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                    Unggah File Lain
+                </button>
+            </div>
+            
+            <!-- Upload State: ERROR -->
+             <div id="error-container" class="hidden mt-6 text-center">
+                <div class="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i data-lucide="alert-circle" class="w-8 h-8 text-red-600 dark:text-red-400"></i>
+                </div>
+                <h3 class="text-lg font-bold text-red-600 dark:text-red-400">Gagal Mengunggah</h3>
+                <p id="error-message" class="text-sm text-gray-500 dark:text-gray-400 mt-1 mb-4">Terjadi kesalahan koneksi.</p>
+                 <button id="retry-btn" class="px-6 py-2 rounded-lg bg-red-600 text-white text-sm hover:bg-red-700 transition-colors">
+                    Coba Lagi
+                </button>
+            </div>
+
+            <!-- Footer Info -->
+            <div class="mt-8 pt-4 border-t border-gray-100 dark:border-white/5 flex justify-between items-center text-xs text-gray-400">
+                <span>⚡ Powered by tmpfiles.org</span>
+                <span>🔒 Enkripsi TLS</span>
+            </div>
+        </div>
+        
+        <div class="text-center mt-6">
+            <p class="text-xs text-gray-400 dark:text-gray-500 font-medium">SHANOZ &copy; 2026. Simple & Secure.</p>
+        </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 translate-y-20 opacity-0 transition-all duration-300 z-50">
+        <div class="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 py-3 rounded-full shadow-2xl flex items-center gap-2">
+            <i data-lucide="check-circle" class="w-4 h-4"></i>
+            <span class="text-sm font-medium">Tautan disalin ke clipboard!</span>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. ICONS & THEME SETUP ---
+        lucide.createIcons();
+
+        // Theme Logic
+        const themeToggle = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
+
+        // Check local storage or system preference
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            htmlElement.classList.add('dark');
+        } else {
+            htmlElement.classList.remove('dark');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            htmlElement.classList.toggle('dark');
+            if (htmlElement.classList.contains('dark')) {
+                localStorage.theme = 'dark';
+            } else {
+                localStorage.theme = 'light';
+            }
+        });
+
+        // --- 2. DOM ELEMENTS ---
+        const dropZone = document.getElementById('upload-zone');
+        const fileInput = document.getElementById('file-input');
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress-bar');
+        const progressPercent = document.getElementById('progress-percent');
+        const fileNameDisplay = document.getElementById('file-name-display');
+        const resultContainer = document.getElementById('result-container');
+        const errorContainer = document.getElementById('error-container');
+        const errorMessage = document.getElementById('error-message');
+        const downloadLinkInput = document.getElementById('download-link');
+        const copyBtn = document.getElementById('copy-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const retryBtn = document.getElementById('retry-btn');
+        const toast = document.getElementById('toast');
+
+        // --- 3. DRAG & DROP LOGIC ---
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            dropZone.querySelector('div').classList.add('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/20');
+        }
+
+        function unhighlight() {
+            dropZone.querySelector('div').classList.remove('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/20');
+        }
+
+        dropZone.addEventListener('drop', handleDrop, false);
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+
+        // --- 4. UPLOAD LOGIC ---
+        function handleFiles(files) {
+            if (files.length > 0) {
+                const file = files[0];
+                uploadFile(file);
+            }
+        }
+
+        function uploadFile(file) {
+            // UI Reset
+            dropZone.classList.add('hidden');
+            resultContainer.classList.add('hidden');
+            errorContainer.classList.add('hidden');
+            progressContainer.classList.remove('hidden');
+            
+            // Set File Name (Truncate if too long)
+            const name = file.name.length > 25 ? file.name.substring(0, 20) + '...' + file.name.split('.').pop() : file.name;
+            fileNameDisplay.textContent = name;
+            progressBar.style.width = '0%';
+            progressPercent.textContent = '0%';
+
+            // Create FormData
+            const formData = new FormData();
+            formData.append('file', file);
+
+            // XHR Request for Progress Tracking
+            const xhr = new XMLHttpRequest();
+            // Using tmpfiles.org API
+            xhr.open('POST', 'https://tmpfiles.org/api/v1/upload', true);
+
+            xhr.upload.onprogress = function(e) {
+                if (e.lengthComputable) {
+                    const percentComplete = Math.round((e.loaded / e.total) * 100);
+                    progressBar.style.width = percentComplete + '%';
+                    progressPercent.textContent = percentComplete + '%';
+                }
+            };
+
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.status === 'success') {
+                            showSuccess(response.data.url);
+                        } else {
+                            showError('API Error: ' + (response.message || 'Unknown error'));
+                        }
+                    } catch (e) {
+                        showError('Gagal memproses respons server.');
+                    }
+                } else {
+                    showError('Server Error: ' + xhr.statusText);
+                }
+            };
+
+            xhr.onerror = function() {
+                showError('Koneksi jaringan gagal.');
+            };
+
+            xhr.send(formData);
+        }
+
+        // --- 5. RESULT HANDLING ---
+        function showSuccess(url) {
+            // Modify URL to make it directly accessible if possible, 
+            // but tmpfiles usually gives a view page.
+            // Let's use the URL provided.
+            
+            // Artificial delay for smooth UX (so user sees 100%)
+            setTimeout(() => {
+                progressContainer.classList.add('hidden');
+                resultContainer.classList.remove('hidden');
+                
+                // Animasi masuk
+                resultContainer.classList.add('animate-intro-zoom');
+                
+                downloadLinkInput.value = url;
+            }, 500);
+        }
+
+        function showError(msg) {
+            progressContainer.classList.add('hidden');
+            errorContainer.classList.remove('hidden');
+            errorContainer.classList.add('animate-intro-zoom');
+            errorMessage.textContent = msg;
+        }
+
+        // --- 6. UTILITIES ---
+        copyBtn.addEventListener('click', () => {
+            downloadLinkInput.select();
+            downloadLinkInput.setSelectionRange(0, 99999); // Mobile
+            
+            // FIX: Menggunakan try-catch dan document.execCommand sebagai prioritas
+            // untuk mengatasi pembatasan Permissions Policy pada navigator.clipboard di iframe
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showToast();
+                } else {
+                    throw new Error('execCommand failed');
+                }
+            } catch (err) {
+                console.warn('Fallback to clipboard API:', err);
+                // Fallback terakhir jika execCommand gagal (jarang terjadi untuk text input)
+                if (navigator.clipboard) {
+                     navigator.clipboard.writeText(downloadLinkInput.value)
+                        .then(showToast)
+                        .catch(e => console.error('All copy methods failed', e));
+                }
+            }
+        });
+
+        function showToast() {
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        resetBtn.addEventListener('click', resetApp);
+        retryBtn.addEventListener('click', resetApp);
+
+        function resetApp() {
+            resultContainer.classList.add('hidden');
+            errorContainer.classList.add('hidden');
+            dropZone.classList.remove('hidden');
+            fileInput.value = ''; // Clear input
+            
+            // Re-trigger animation
+            dropZone.classList.remove('animate-intro-zoom');
+            void dropZone.offsetWidth; // trigger reflow
+            dropZone.classList.add('animate-intro-zoom');
+        }
+
+    </script>
+</body>
+</html>                        'zoom-in': 'zoomIn 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards',
                         'fade-out': 'fadeOut 0.5s ease-out forwards',
                         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     },
